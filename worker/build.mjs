@@ -1,10 +1,12 @@
-import {mkdirSync, readFileSync, writeFileSync} from 'node:fs';
+import {existsSync, mkdirSync, readFileSync, writeFileSync} from 'node:fs';
 
 const page = readFileSync('dist/index.html', 'utf8').replaceAll('חריטה לבית', 'חריטה ללב');
 const worker = readFileSync('worker/index.mjs', 'utf8');
 const media = {};
 for (const [name, type] of [['launch.jpg','image/jpeg'], ['materials.mp4','video/mp4']]) {
-  const bytes = readFileSync('worker/media/' + name);
+  const path = 'worker/media/' + name;
+  if (!existsSync(path)) continue;
+  const bytes = readFileSync(path);
   media['/campaign/' + name] = {type, size:bytes.length, data:bytes.toString('base64')};
 }
 mkdirSync('dist/server', {recursive:true});
